@@ -11,7 +11,7 @@ export const NotificationProvider: React.FC<{ rootId: string }> = ({ rootId }) =
   const [root] = useState(() => document.getElementById(rootId));
 
   const notifications = useStore(notifyModel.$notifications);
-  const hideNotification = useEvent(notifyModel.hideNotification);
+  const hideNotification = useEvent(notifyModel.cancel);
 
   if (!root) throw Error("Modal container not find!");
 

@@ -5,7 +5,7 @@ import { useEvent } from "effector-react";
 import { NotificationProvider, notifyModel } from "entities/notifications";
 
 export const Application = () => {
-  const show = useEvent(notifyModel.showNotification);
+  const show = useEvent(notifyModel.notify);
 
   const showInfo = () => show({ message: "Info notify" });
   const showError = () => show({ message: "Error notify", status: "error" });

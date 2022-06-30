@@ -1,8 +1,9 @@
-export type TNotification = {
+export type TDraftNotification = {
   id: string;
   message: string;
-  timeout?: number; // in seconds
-  status?: "success" | "info" | "error"; // info defaukt
+  timeout?: number;
+  status?: "success" | "info" | "error";
 };
 
-export type TSimpleNotify = Omit<TNotification, "id">;
+export type TSimpleNotify = Omit<TDraftNotification, "id">;
+export type TNotification = Required<TDraftNotification>;
