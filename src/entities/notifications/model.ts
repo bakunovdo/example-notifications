@@ -4,39 +4,45 @@ import { append } from "shared";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { TNotification } from "./types";
+import { TNotification, TSimpleNotify } from "./types";
 
-const DELAY_TIMOUT = 2500;
+const DEFAULT_DELAY_TIMOUT = 2500;
 
-export const showNotification = createEvent<TNotification>();
+export const showNotification = createEvent<TSimpleNotify>();
+
+export const showFilledNotification = createEvent<TNotification>();
+
 export const hideNotification = createEvent<TNotification>();
 
 const notificationDelayFx = createEffect(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (_: TNotification) => new Promise((rs) => setTimeout(rs, DELAY_TIMOUT)),
+  (_: TNotification) => new Promise((rs) => setTimeout(rs, DEFAULT_DELAY_TIMOUT)),
 );
 
 export const $notifications = createStore<TNotification[]>([]);
 
 sample({
   clock: showNotification,
+  fn: (payload) =>
+    ({
+      id: uuidv4(),
+      status: "info",
+      timeout: DEFAULT_DELAY_TIMOUT,
+      ...payload,
+    } as const),
+  target: showFilledNotification,
+});
+
+sample({
+  clock: showFilledNotification,
   target: notificationDelayFx,
 });
 
 $notifications
-  .on(showNotification, (list, newN) => append(list, newN))
+  .on(showFilledNotification, (list, newN) => append(list, newN))
   .on(hideNotification, (list, notification) => deleteNotification(list, notification))
   .on(notificationDelayFx.done, (list, { params }) => deleteNotification(list, params));
 
 function deleteNotification(list: TNotification[], notification: TNotification): TNotification[] {
   return list.filter((item) => item.id !== notification.id);
-}
-
-export function createRandomEvent(): TNotification {
-  const id = uuidv4();
-  return {
-    id,
-    message: "Hi " + id,
-    timestamp: new Date().getTime(),
-  };
 }
